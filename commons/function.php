@@ -1,23 +1,67 @@
 <?php
+// commons/function.php
 
-if (!function_exists('debug')) {
-    function debug($data)
-    {
-        echo '<pre>';
-        print_r($data);
-        die;
+// Kết nối CSDL qua PDO
+function connectDB()
+{
+    // Kết nối CSDL
+    $host = DB_HOST;
+    $port = DB_PORT;
+    $dbname = DB_NAME;
+
+    try {
+        $conn = new PDO("mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4", DB_USERNAME, DB_PASSWORD);
+
+        // cài đặt chế độ báo lỗi là xử lý ngoại lệ
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // cài đặt chế độ trả dữ liệu
+        $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+        return $conn;
+    } catch (PDOException $e) {
+        // Ghi log hoặc hiển thị thông báo ngắn gọn
+        echo ("Connection failed: " . $e->getMessage());
+        exit;
     }
 }
 
-if (!function_exists('upload_file')) {
-    function upload_file($folder, $file)
-    {
-        $targetFile = $folder . '/' . time() . '-' . $file["name"];
+function uploadFile($file, $folderSave)
+{
+    $file_upload = $file;
+    $pathStorage = $folderSave . rand(10000, 99999) . $file_upload['name'];
 
-        if (move_uploaded_file($file["tmp_name"], PATH_ASSETS_UPLOADS . $targetFile)) {
-            return $targetFile;
-        }
+    $tmp_file = $file_upload['tmp_name'];
+    $pathSave = PATH_ROOT . $pathStorage; // Đường dãn tuyệt đối của file
 
-        throw new Exception('Upload file không thành công!');
+    if (move_uploaded_file($tmp_file, $pathSave)) {
+        return $pathStorage;
     }
+    return null;
+}
+
+function deleteFile($file)
+{
+    $pathDelete = PATH_ROOT . $file;
+    if (file_exists($pathDelete)) {
+        unlink($pathDelete);
+    }
+}
+
+// Include header/footer helper (admin)
+function headerAdmin()
+{
+    include PATH_ADMIN . "layout/header.php";
+}
+function footerAdmin()
+{
+    include PATH_ADMIN . "layout/footer.php";
+}
+function headerGuide()
+{
+    include PATH_GUIDE . "layout/header.php";
+}
+function footerGuide()
+{
+    include PATH_GUIDE . "layout/footer.php";
 }
