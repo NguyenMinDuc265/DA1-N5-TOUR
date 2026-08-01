@@ -1,0 +1,117 @@
+<?php
+class UserModel
+{
+    protected $conn;
+    public function __construct()
+    {
+        $this->conn = connectDB();
+    }
+
+    public function getAll()
+    {
+        $sql = "SELECT * FROM users";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findById($id)
+    {
+        $sql = "SELECT * FROM users WHERE user_id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Kiểm tra email đã tồn tại trong cơ sở dữ liệu
+    // Trả về thông tin người dùng nếu tồn tại, không thì trả về null
+    public function checkEmail($email)
+    {
+        $sql = "SELECT * FROM users WHERE email = :email";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+
+        if ($stmt->rowCount() > 0) {
+            return $stmt->fetch();
+        } else {
+            return null; // Không tìm thấy người dùng
+        }
+    }
+    // Lấy thông tin user theo email
+    public function findByEmail($email)
+    {
+        $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute(['email' => $email]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Create new user and return inserted user_id
+    public function create($data)
+    {
+        $sql = "INSERT INTO users (username, password, fullname, email, phone, role, status, created_at)
+                VALUES (:username, :password, :fullname, :email, :phone, :role, :status, NOW())";
+
+        // ensure password is hashed
+        $pw = $data['password'] ?? bin2hex(random_bytes(4));
+        $hash = password_hash($pw, PASSWORD_DEFAULT);
+
+        // ensure username exists
+        $username = trim($data['username'] ?? '');
+        if ($username === '') {
+            if (!empty($data['email'])) {
+                $username = preg_replace('/[^a-z0-9_\.]/i', '', strstr($data['email'], '@', true) ?: 'user') . rand(10, 99);
+            } else {
+                $username = 'hdv_' . time();
+            }
+        }
+
+        $stmt = $this->conn->prepare($sql);
+        $ok = $stmt->execute([
+            'username' => $username,
+            'password' => $hash,
+            'fullname' => $data['fullname'] ?? null,
+            'email'    => $data['email'] ?? null,
+            'phone'    => $data['phone'] ?? null,
+            'role'     => $data['role'] ?? 'hdv',
+            'status'   => $data['status'] ?? 1
+        ]);
+
+        if ($ok) return $this->conn->lastInsertId();
+        return false;
+    }
+    public function updateProfile($user_id, $data)
+    {
+        $sql = "UPDATE users 
+            SET fullname = :fullname,
+                phone    = :phone,
+                email    = :email,
+                password = :password
+            WHERE user_id = :id";
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute([
+            'fullname' => $data['fullname'],
+            'phone'    => $data['phone'],
+            'email'    => $data['email'],
+            // If password appears to be plain text (not a hash), hash it before storing
+            'password' => (function ($p) {
+                if (empty($p)) return '';
+                $info = password_get_info($p);
+                if ($info['algo'] === 0) return password_hash($p, PASSWORD_DEFAULT);
+                return $p;
+            })($data['password']),
+            'id'       => $user_id
+        ]);
+    }
+
+    // Set password hash directly for a user_id
+    public function setPassword($user_id, $hash)
+    {
+        $sql = "UPDATE users SET password = :pw WHERE user_id = :id";
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute(['pw' => $hash, 'id' => $user_id]);
+    }
+}
