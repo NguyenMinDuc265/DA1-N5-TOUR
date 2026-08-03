@@ -1,27 +1,19 @@
-<?php
+<?php 
 
-define('BASE_URL',          'http://localhost/BaseExam/');
+// Biến môi trường, dùng chung toàn hệ thống
+// Khai báo dưới dạng HẰNG SỐ để không phải dùng $GLOBALS
 
-define('PATH_ROOT',         __DIR__ . '/../');
+define('BASE_URL'       , 'http://localhost/DA1_N5_TOUR_MVC/');
 
-define('PATH_VIEW',         PATH_ROOT . 'views/');
-
-define('PATH_VIEW_MAIN',    PATH_ROOT . 'views/main.php');
-
-define('BASE_ASSETS_UPLOADS',   BASE_URL . 'assets/uploads/');
-
-define('PATH_ASSETS_UPLOADS',   PATH_ROOT . 'assets/uploads/');
-
-define('PATH_CONTROLLER',       PATH_ROOT . 'controllers/');
-
-define('PATH_MODEL',            PATH_ROOT . 'models/');
-
-define('DB_HOST',     'localhost');
-define('DB_PORT',     '3306');
+define('DB_HOST'    , 'localhost');
+define('DB_PORT'    , 3306);
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
-define('DB_NAME',     '');
-define('DB_OPTIONS', [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
+define('DB_NAME'    , 'duan1travel');  // Tên database
+
+// PATH ROOT – trỏ đúng về thư mục gốc dự án
+define('PATH_ROOT', dirname(__DIR__) . '/');
+//Cấu hình thư mục phần giao diện của quản trị tour
+define('PATH_ADMIN', PATH_ROOT . '/views/admin/');
+//Cấu hình thư mục phần giao diện hường dẫn viên 
+define('PATH_GUIDE', PATH_ROOT . '/views/guide/');
