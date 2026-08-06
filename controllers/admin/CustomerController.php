@@ -6,7 +6,7 @@ class CustomerController
 
     public function __construct()
     {
-        checkIsAdmin();
+        // checkIsAdmin();
         $this->customerModel = new CustomerModel();
     }
 
