@@ -7,7 +7,7 @@ class GuideController
 
     public function __construct()
     {
-        checkIsAdmin();
+        // checkIsAdmin();
         $this->guideModel = new GuideModel();
         $this->userModel = new UserModel();
     }
