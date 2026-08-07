@@ -7,7 +7,7 @@ class GuideProfileController
     public function __construct()
     {
         if (!isset($_SESSION)) session_start();
-        checkIsGuide();
+        // checkIsGuide();
         $this->guideModel = new GuideModel();
     }
 
