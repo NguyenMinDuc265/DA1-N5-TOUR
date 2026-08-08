@@ -9,7 +9,7 @@ define('DB_HOST'    , 'localhost');
 define('DB_PORT'    , 3306);
 define('DB_USERNAME', 'root');
 define('DB_PASSWORD', '');
-define('DB_NAME'    , 'duan1travel');  // Tên database
+define('DB_NAME'    , 'da1');  // Tên database
 
 // PATH ROOT – trỏ đúng về thư mục gốc dự án
 define('PATH_ROOT', dirname(__DIR__) . '/');
