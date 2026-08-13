@@ -5,7 +5,7 @@ class GuideScheduleController {
 
     public function __construct() {
         if (!isset($_SESSION)) session_start();
-        // checkIsGuide();
+        checkIsGuide();
 
         $this->scheduleModel = new ScheduleModel();
     }

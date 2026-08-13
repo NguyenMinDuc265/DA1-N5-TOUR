@@ -91,7 +91,7 @@ document.getElementById("tourSelect").addEventListener("change", function () {
             json.data.forEach(h => {
                 let opt = document.createElement('option');
                 opt.value = h.hotel_id;
-                opt.textContent = h.name + " — " + h.location;
+                opt.textContent = h.name + " — " + (h.address || "");
                 hotelSelect.appendChild(opt);
             });
         })

@@ -20,8 +20,9 @@ $guide = $_SESSION['guide'] ?? null;
 
     <!-- SIDEBAR -->
     <div id="sidebar">
-        <h4>👨‍✈️ HƯỚNG DẪN VIÊN</h4>
+        <h4>🧭 N5 TOUR</h4>
 
+        <a href="home.php">🌐 Trang chủ</a>
         <a href="index.php" class="<?= ($_GET['act'] ?? '') == '' ? 'active' : '' ?>">🏠 Dashboard</a>
 
         <a href="index.php?act=my-tours" 
@@ -44,6 +45,7 @@ $guide = $_SESSION['guide'] ?? null;
            👤 Hồ sơ cá nhân
         </a>
 
+        <div class="sb-spacer"></div>
         <a href="index.php?act=logout" style="color: #f87171;">🚪 Đăng xuất</a>
     </div>
 

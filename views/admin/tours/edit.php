@@ -1,108 +1,100 @@
 <?php headerAdmin(); ?>
-<h2>Sửa tour</h2>
-<form method="POST" enctype="multipart/form-data" action="admin.php?act=update_tour">
 
-    <input type="hidden" name="tour_id" value="<?= $tour['tour_id'] ?>">
-    
- <label>Danh mục:</label>
-    <select name="category_id" required>
-        <?php foreach ($categories as $cate): ?>
-            <option value="<?= $cate['category_id'] ?>"
-                <?= ($cate['category_id'] == $tour['category_id']) ? 'selected' : '' ?>>
-                <?= $cate['name'] ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h3 mb-0">Sửa Tour</h2>
+    <a href="admin.php?act=tour_list" class="btn btn-outline-secondary btn-sm">← Quay lại danh sách</a>
+</div>
 
-    <label>Tên tour:</label>
-    <input type="text" name="name" value="<?= $tour['name'] ?>" required>
+<div class="card">
+    <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data" action="admin.php?act=update_tour">
 
-    <label>Mô tả:</label>
-    <textarea name="description"><?= $tour['description'] ?></textarea>
+            <input type="hidden" name="tour_id" value="<?= $tour['tour_id'] ?>">
+            <input type="hidden" name="old_image" value="<?= htmlspecialchars($tour['image'] ?? '') ?>">
 
-    <label>Nhà cung cấp:</label>
-    <input type="text" name="supplier" value="<?= $tour['supplier'] ?>">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select name="category_id" class="form-select" required>
+                        <?php foreach ($categories as $cate): ?>
+                            <option value="<?= $cate['category_id'] ?>"
+                                <?= ($cate['category_id'] == $tour['category_id']) ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cate['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-    <label>Giá tiền:</label>
-    <input type="number" name="price" value="<?= $tour['price'] ?? '' ?>" required step="1000">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tên tour</label>
+                    <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($tour['name']) ?>" required>
+                </div>
+            </div>
 
-    <label>Trạng thái:</label>
-    <select name="status">
-        <option value="1" <?= $tour['status'] ? 'selected' : '' ?>>Hiển thị</option>
-        <option value="0" <?= !$tour['status'] ? 'selected' : '' ?>>Ẩn</option>
-    </select>
+            <div class="mb-3">
+                <label class="form-label">Mô tả</label>
+                <textarea name="description" class="form-control" rows="4"><?= htmlspecialchars($tour['description']) ?></textarea>
+            </div>
 
-    <button type="submit">Cập nhật</button>
-</form>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nhà cung cấp</label>
+                    <input type="text" name="supplier" class="form-control" value="<?= htmlspecialchars($tour['supplier']) ?>">
+                </div>
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
-    margin: 20px;
-}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Giá tiền</label>
+                    <input type="number" name="price" class="form-control" value="<?= $tour['price'] ?? '' ?>" required step="1000">
+                </div>
+            </div>
 
-/* Tiêu đề */
-h2 {
-    color: #1e90ff;
-    text-align: center;
-    margin-bottom: 20px;
-}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hình ảnh mới (tùy chọn)</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                </div>
 
-/* Form container */
-form {
-    background-color: #ffffff;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 25px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="1" <?= $tour['status'] ? 'selected' : '' ?>>Hiển thị</option>
+                        <option value="0" <?= !$tour['status'] ? 'selected' : '' ?>>Ẩn</option>
+                    </select>
+                </div>
+            </div>
 
-/* Nhãn */
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333333;
-    margin-top: 10px;
-}
+            <div class="mb-3">
+                <label class="form-label">Khách sạn áp dụng cho tour này</label>
+                <div class="border rounded p-3">
+                    <div class="row">
+                        <?php foreach ($hotels as $h): ?>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="hotel_ids[]"
+                                           value="<?= $h['hotel_id'] ?>" id="hotel_<?= $h['hotel_id'] ?>"
+                                           <?= in_array($h['hotel_id'], $assignedHotelIds) ? 'checked' : '' ?>>
+                                    <label class="form-check-label" for="hotel_<?= $h['hotel_id'] ?>">
+                                        <?= htmlspecialchars($h['name']) ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        <?php if (empty($hotels)): ?>
+                            <p class="text-muted mb-0">
+                                Chưa có khách sạn nào. <a href="admin.php?act=hotel_add_form">+ Thêm khách sạn</a> trước.
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <small class="text-muted">Chỉ những khách sạn được tick ở đây mới hiện ra khi tạo Booking cho tour này.</small>
+            </div>
 
-/* Input, textarea, select */
-input[type="text"],
-input[type="number"],
-input[type="file"],
-textarea,
-select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #cce7ff;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
-}
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary">💾 Cập nhật</button>
+                <a href="admin.php?act=tour_list" class="btn btn-outline-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
 
-/* Textarea resize */
-textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* Button */
-button {
-    background-color: #1e90ff;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin-top: 15px;
-}
-
-button:hover {
-    background-color: #63b3ff;
-}
-</style>
+<?php footerAdmin(); ?>

@@ -96,6 +96,19 @@ match ($act) {
 
 
     /* ===============================
+        HOTEL
+    =============================== */
+    'hotel_list'                => (new HotelController())->index(),
+    'hotel_add_form'            => (new HotelController())->createForm(),
+    'hotel_add'                 => (new HotelController())->store(),
+    'hotel_edit_form'           => (new HotelController())->editForm(),
+    'hotel_update'               => (new HotelController())->update(),
+    'hotel_delete'               => (new HotelController())->delete(),
+    'hotel_assign_tours_form'    => (new HotelController())->assignToursForm(),
+    'hotel_assign_tours'         => (new HotelController())->assignTours(),
+
+
+    /* ===============================
         GUIDE
     =============================== */
     'guide'        => (new GuideController())->index(),
