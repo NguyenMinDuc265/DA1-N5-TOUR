@@ -7,7 +7,7 @@ class AttendanceController
     public function __construct()
     {
         if (!isset($_SESSION)) session_start();
-        checkIsAdmin();
+        // checkIsAdmin();
         $this->attendanceModel = new AttendanceModel();
     }
 

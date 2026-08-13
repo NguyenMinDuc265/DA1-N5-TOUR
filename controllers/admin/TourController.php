@@ -2,11 +2,13 @@
 class TourController{
     public $modelTour;
     public $modelCategory;
+    public $modelHotel;
 
     
     public function __construct(){
         $this->modelTour = new TourModel();
         $this->modelCategory = new CategoryModel();
+        $this->modelHotel = new HotelModel();
     }
    
        //Danh sách tour
@@ -50,6 +52,7 @@ class TourController{
 
     public function FormAdd(){
         $categories = $this->modelCategory->getAllCategory();
+        $hotels = $this->modelHotel->getAll();
        require './views/admin/tours/add.php';
 
     }
@@ -75,7 +78,14 @@ class TourController{
                 'image' => $imageName,
                 'status' => $_POST['status']
              ];
-             $this->modelTour->addTour($data);
+             $newTourId = $this->modelTour->addTour($data);
+
+             // Gán các khách sạn được tick chọn cho tour vừa tạo
+             $hotelIds = $_POST['hotel_ids'] ?? [];
+             if ($newTourId) {
+                 $this->modelHotel->syncHotelsForTour($newTourId, $hotelIds);
+             }
+
             header('Location:admin.php?act=tour_list');
 
         }
@@ -87,6 +97,8 @@ class TourController{
         $id=$_GET['id'];
         $tour = $this->modelTour->getTourById($id);
         $categories=$this->modelCategory->getAllCategory();
+        $hotels = $this->modelHotel->getAll();
+        $assignedHotelIds = $this->modelHotel->getHotelIdsByTour($id);
 
          require './views/admin/tours/edit.php';
 
@@ -116,6 +128,11 @@ class TourController{
                 'status' => $_POST['status']
              ];
              $this->modelTour->updateTour($data);
+
+             // Cập nhật lại danh sách khách sạn áp dụng cho tour
+             $hotelIds = $_POST['hotel_ids'] ?? [];
+             $this->modelHotel->syncHotelsForTour($_POST['tour_id'], $hotelIds);
+
             header('Location:admin.php?act=tour_list');
 
         }

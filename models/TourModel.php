@@ -50,7 +50,8 @@ class TourModel
         VALUES (:category_id, :name, :description, :supplier, :price, :image, :status)";
 
         $stmt = $this->conn->prepare($sql);
-        return $stmt->execute($data);
+        $stmt->execute($data);
+        return $this->conn->lastInsertId();
     }
 
     //Lấy 1 tour

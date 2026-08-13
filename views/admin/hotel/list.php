@@ -1,8 +1,8 @@
 <?php headerAdmin() ?>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="h3 mb-0">Danh sách danh mục</h2>
-    <a href="admin.php?act=category_add_form" class="btn btn-primary">+ Thêm danh mục</a>
+    <h2 class="h3 mb-0">Danh sách khách sạn</h2>
+    <a href="admin.php?act=hotel_add_form" class="btn btn-primary">+ Thêm khách sạn</a>
 </div>
 
 <?php
@@ -22,26 +22,31 @@ if (isset($_SESSION['error'])) {
             <thead>
                 <tr>
                     <th>#</th>
-                    <th>Tên danh mục</th>
-                    <th>Mô tả</th>
+                    <th>Tên khách sạn</th>
+                    <th>Địa chỉ</th>
+                    <th>Người quản lý</th>
+                    <th>SĐT quản lý</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($categories as $index => $cate): ?>
+                <?php foreach ($hotels as $index => $hotel): ?>
                     <tr>
                         <td><?= $index + 1 ?></td>
-                        <td class="fw-semibold"><?= htmlspecialchars($cate['name']) ?></td>
-                        <td><?= htmlspecialchars($cate['description']) ?></td>
+                        <td class="fw-semibold"><?= htmlspecialchars($hotel['name']) ?></td>
+                        <td><?= htmlspecialchars($hotel['address'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($hotel['manager_name'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($hotel['manager_phone'] ?? '') ?></td>
                         <td>
-                            <a class="edit" href="admin.php?act=category_edit_form&id=<?= $cate['category_id'] ?>">Sửa</a>
-                            <a class="delete" href="admin.php?act=category_delete&id=<?= $cate['category_id'] ?>" onclick="return confirm('Xóa danh mục này?')">Xóa</a>
+                            <a class="detail" href="admin.php?act=hotel_assign_tours_form&id=<?= $hotel['hotel_id'] ?>">Gán Tour</a>
+                            <a class="edit" href="admin.php?act=hotel_edit_form&id=<?= $hotel['hotel_id'] ?>">Sửa</a>
+                            <a class="delete" href="admin.php?act=hotel_delete&id=<?= $hotel['hotel_id'] ?>" onclick="return confirm('Xóa khách sạn này?')">Xóa</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
-                <?php if (empty($categories)): ?>
+                <?php if (empty($hotels)): ?>
                     <tr>
-                        <td colspan="4" class="text-center text-muted py-4">Chưa có danh mục nào.</td>
+                        <td colspan="6" class="text-center text-muted py-4">Chưa có khách sạn nào.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

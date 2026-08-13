@@ -5,7 +5,7 @@ class StatisticalController
 
     public function __construct()
     {
-        checkIsAdmin();
+        // checkIsAdmin();
         $this->conn = connectDB();
     }
 

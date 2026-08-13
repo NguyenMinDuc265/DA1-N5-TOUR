@@ -1,174 +1,98 @@
-<?php 
-headerAdmin(); 
-?>
-<br>
-<h2>Danh sách Tour</h2>
-<?php 
-if(isset($_SESSION['success'])){
-    echo '<div class="alert alert-success" id="flash-message">'.$_SESSION['success'].'</div>';
-    unset($_SESSION['success']);
-}
+<?php headerAdmin(); ?>
 
-if(isset($_SESSION['error'])){
-    echo '<div class="alert alert-danger" id="flash-message">'.$_SESSION['error'].'</div>';
-    unset($_SESSION['error']);
-}
-?>
-<a href="admin.php?act=form_add_tour">+ Thêm tour</a>
-<form action="admin.php" method="GET" style="margin-bottom: 15px;">
-    <input type="hidden" name="act" value="tour_list">
-    <input type="text" name="q" placeholder="Tìm tour ..." value="<?= isset($_GET['q']) ? htmlspecialchars($_GET['q']) : '' ?>">
-    <button type="submit">Tìm kiếm</button>
-</form>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Tên tour</th>
-        <th>Danh mục</th>
-        <th>Nhà cung cấp</th>
-        <th>Giá tour/người</th>
-        <th>Trạng thái</th>
-        <th>Hành động</th>
-    </tr>
-    <?php foreach ($tours as $index=>$tour): ?>
-    <tr>
-        <td><?= $index+1 ?></td>
-        <td><?= $tour['name'] ?></td>
-        <td><?= $tour['category_name'] ?></td>
-        <td><?= $tour['supplier'] ?></td>
-        <td><?= number_format($tour['price'], 0, ',', '.') . ' đ' ?></td>
-        
-        <td><?= $tour['status'] ? 'Hiển thị' : 'Ẩn' ?></td>
-        <td>
-            <a class="detail" href="admin.php?act=tour_detail&id=<?= $tour['tour_id'] ?>">Chi tiết</a>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h3 mb-0">Thêm Tour mới</h2>
+    <a href="admin.php?act=tour_list" class="btn btn-outline-secondary btn-sm">← Quay lại danh sách</a>
+</div>
 
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="alert alert-danger"><?= $_SESSION['error']; unset($_SESSION['error']); ?></div>
+<?php endif; ?>
 
-            <a class="edit" href="admin.php?act=form_edit_tour&id=<?= $tour['tour_id'] ?>">Sửa</a>
-            <a class="delete" href="admin.php?act=delete_tour&id=<?= $tour['tour_id'] ?>" onclick="return confirm('Xóa tour này?')">Xóa</a>
-        </td>
-    </tr>
-    <?php endforeach; ?>
-</table>
-<?php 
-footerAdmin(); 
-?>
+<div class="card">
+    <div class="card-body p-4">
+        <form method="POST" enctype="multipart/form-data" action="admin.php?act=add_tour">
 
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f8ff;
-    margin: 20px;
-}
-/* Nút Chi tiết */
-table a.detail {
-    text-decoration: none;
-    color: white;
-    background-color: #007bff; /* xanh dương */
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    margin-right: 5px;
-}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Danh mục</label>
+                    <select name="category_id" class="form-select" required>
+                        <option value="">-- Chọn danh mục --</option>
+                        <?php foreach ($categories as $cate): ?>
+                            <option value="<?= $cate['category_id'] ?>"><?= htmlspecialchars($cate['name']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-table a.detail:hover {
-    background-color: #3399ff;
-}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Tên tour</label>
+                    <input type="text" name="name" class="form-control" placeholder="Nhập tên tour" required>
+                </div>
+            </div>
 
+            <div class="mb-3">
+                <label class="form-label">Mô tả</label>
+                <textarea name="description" class="form-control" rows="4" placeholder="Mô tả chi tiết về tour"></textarea>
+            </div>
 
-/* Tiêu đề */
-h2 {
-    color: #1e90ff;
-    text-align: center;
-    margin-bottom: 20px;
-}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Nhà cung cấp</label>
+                    <input type="text" name="supplier" class="form-control" placeholder="Tên nhà cung cấp">
+                </div>
 
-/* Link thêm tour */
-a[href*="form_add_tour"] {
-    display: inline-block;
-    margin-bottom: 15px;
-    text-decoration: none;
-    color: white;
-    background-color: #1e90ff;
-    padding: 8px 15px;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
-}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Giá tour / người</label>
+                    <input type="number" name="price" class="form-control" required step="1000" placeholder="VD: 2500000">
+                </div>
+            </div>
 
-a[href*="form_add_tour"]:hover {
-    background-color: #63b3ff;
-}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Hình ảnh</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                </div>
 
-/* Bảng */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="1">Hiển thị</option>
+                        <option value="0">Ẩn</option>
+                    </select>
+                </div>
+            </div>
 
-/* Header bảng */
-table th {
-    background-color: #1e90ff;
-    color: white;
-    padding: 12px;
-    text-align: left;
-}
+            <div class="mb-3">
+                <label class="form-label">Khách sạn áp dụng cho tour này</label>
+                <div class="border rounded p-3">
+                    <div class="row">
+                        <?php foreach ($hotels as $h): ?>
+                            <div class="col-md-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="hotel_ids[]"
+                                           value="<?= $h['hotel_id'] ?>" id="hotel_<?= $h['hotel_id'] ?>">
+                                    <label class="form-check-label" for="hotel_<?= $h['hotel_id'] ?>">
+                                        <?= htmlspecialchars($h['name']) ?>
+                                    </label>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                        <?php if (empty($hotels)): ?>
+                            <p class="text-muted mb-0">
+                                Chưa có khách sạn nào. <a href="admin.php?act=hotel_add_form">+ Thêm khách sạn</a> trước.
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <small class="text-muted">Chỉ những khách sạn được tick ở đây mới hiện ra khi tạo Booking cho tour này.</small>
+            </div>
 
-/* Dòng dữ liệu */
-table td {
-    padding: 10px;
-    border-bottom: 1px solid #cce7ff;
-    vertical-align: middle;
-}
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary">💾 Lưu tour</button>
+                <a href="admin.php?act=tour_list" class="btn btn-outline-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
 
-/* Ảnh tour */
-table img {
-    border-radius: 6px;
-}
-
-/* Nút Sửa */
-table a.edit {
-    text-decoration: none;
-    color: white;
-    background-color: #28a745; /* xanh lá */
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-    margin-right: 5px;
-}
-
-table a.edit:hover {
-    background-color: #63d168;
-}
-
-/* Nút Xóa */
-table a.delete {
-    text-decoration: none;
-    color: white;
-    background-color: #dc3545; /* đỏ */
-    padding: 5px 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-
-table a.delete:hover {
-    background-color: #e86c75;
-}
-
-/* Dòng cuối không có border */
-table tr:last-child td {
-    border-bottom: none;
-}
-</style>
-<script>
-    const flash = document.getElementById('flash-message');
-    if(flash){
-        setTimeout(() => {
-            flash.style.transition = "opacity 0.5s ease";
-            flash.style.opacity = "0";
-            setTimeout(() => flash.remove(), 500); // xóa khỏi DOM
-        }, 2000); // 2000ms = 2s
-    }
-</script>
+<?php footerAdmin(); ?>

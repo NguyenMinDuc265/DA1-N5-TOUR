@@ -65,3 +65,17 @@ function footerGuide()
 {
     include PATH_GUIDE . "layout/footer.php";
 }
+
+function checkIsAdmin() {
+    if (!isset($_SESSION['admin'])) {
+        header('Location: admin.php?act=login');
+        exit;
+    }
+}
+
+function checkIsGuide() {
+    if (!isset($_SESSION['guide'])) {
+        header('Location: index.php?act=login');
+        exit;
+    }
+}
